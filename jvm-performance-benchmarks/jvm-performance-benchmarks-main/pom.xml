@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>JVM Performance Benchmarks</name>
+
+    <groupId>jvm.performance.benchmarks</groupId>
+    <artifactId>jvm-performance-benchmarks</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <uberjar.name>benchmarks</uberjar.name>
+        <maven.compiler.plugin>3.11.0</maven.compiler.plugin>
+        <maven.shade.plugin>3.5.0</maven.shade.plugin>
+        <org.openjdk.jmh>1.37</org.openjdk.jmh>
+        <spotless.maven.plugin>2.40.0</spotless.maven.plugin>
+        <google.java.format>1.18.1</google.java.format>
+    </properties>
+
+    <modules>
+        <module>benchmarks</module>
+    </modules>
+
+    <scm>
+        <connection>scm:git@github.com:ionutbalosin/jvm-performance-benchmarks.git</connection>
+        <developerConnection>scm:git@github.com:ionutbalosin/jvm-performance-benchmarks.git
+        </developerConnection>
+        <url>scm:git@github.com:ionutbalosin/jvm-performance-benchmarks.git</url>
+    </scm>
+
+    <profiles>
+
+        <profile>
+            <id>jdk11_profile</id>
+            <properties>
+                <jdk.version>11</jdk.version>
+                <spotlessExcludedFiles>
+                    **/*SwitchBenchmark.java,**/holidayplanner/**/*.java,**/IoBlockingRoundtripLatencyBenchmark.java,**/VPThread*.java,**/StringConcatenationBenchmark.java,**/StringFormatBenchmark.java,**/StringWhitespaceBenchmark.java,**/api/time/**.java
+                </spotlessExcludedFiles>
+                <compilerExcludedFiles>
+                    **/*SwitchBenchmark.java,**/holidayplanner/**/*.java,**/IoBlockingRoundtripLatencyBenchmark.java,**/VPThread*.java,**/*VectorApiBenchmark.java,**/RandomGeneratorBenchmark.java,**/ThreadLocalRandomBenchmark.java,**/StringConcatenationBenchmark.java,**/StringFormatBenchmark.java,**/StringWhitespaceBenchmark.java,**/api/time/**.java
+                </compilerExcludedFiles>
+                <compilerArgs>
+                    --add-exports=java.base/jdk.internal.vm.annotation=ALL-UNNAMED,--add-exports=java.management/sun.management=ALL-UNNAMED,--enable-preview
+                </compilerArgs>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>jdk17_profile</id>
+            <properties>
+                <jdk.version>17</jdk.version>
+                <spotlessExcludedFiles>
+                    **/TypeSwitchBenchmark.java,**/StringConcatenationBenchmark.java,**/StringFormatBenchmark.java
+                </spotlessExcludedFiles>
+                <compilerExcludedFiles>
+                    **/TypeSwitchBenchmark.java,**/holidayplanner/**/*.java,**/IoBlockingRoundtripLatencyBenchmark.java,**/VPThread*.java,**/StringConcatenationBenchmark.java,**/StringFormatBenchmark.java
+                </compilerExcludedFiles>
+                <compilerArgs>
+                    --add-modules=jdk.incubator.vector,--add-exports=java.base/jdk.internal.vm.annotation=ALL-UNNAMED,--add-exports=java.management/sun.management=ALL-UNNAMED,--enable-preview
+                </compilerArgs>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>jdk21_profile</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <jdk.version>21</jdk.version>
+                <spotlessExcludedFiles>
+                    **/TypeSwitchBenchmark.java,**/StringConcatenationBenchmark.java,**/StringFormatBenchmark.java
+                </spotlessExcludedFiles>
+                <compilerArgs>
+                    --add-modules=jdk.incubator.vector,--add-exports=java.base/jdk.internal.vm.annotation=ALL-UNNAMED,--add-exports=java.management/sun.management=ALL-UNNAMED,--enable-preview
+                </compilerArgs>
+            </properties>
+        </profile>
+
+    </profiles>
+
+    <build>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin}</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.openjdk.jmh</groupId>
+                            <artifactId>jmh-generator-annprocess</artifactId>
+                            <version>${org.openjdk.jmh}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                    <excludes>
+                        ${compilerExcludedFiles}
+                    </excludes>
+                    <compilerArgs>
+                        ${compilerArgs}
+                    </compilerArgs>
+                    <jdkToolchain>
+                        <version>${jdk.version}</version>
+                    </jdkToolchain>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.openjdk.jmh</groupId>
+                        <artifactId>jmh-generator-annprocess</artifactId>
+                        <version>${org.openjdk.jmh}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <jdkToolchain>
+                                <version>${jdk.version}</version>
+                            </jdkToolchain>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>${maven.shade.plugin}</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>${uberjar.name}</finalName>
+                            <transformers>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>org.openjdk.jmh.Main</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.maven.plugin}</version>
+                <configuration>
+                    <java>
+                        <excludes>
+                            ${spotlessExcludedFiles}
+                        </excludes>
+                        <googleJavaFormat>
+                            <version>${google.java.format}</version>
+                            <style>GOOGLE</style>
+                            <reflowLongStrings>true</reflowLongStrings>
+                            <groupArtifact>com.google.googlejavaformat:google-java-format</groupArtifact>
+                        </googleJavaFormat>
+                        <removeUnusedImports/>
+                        <licenseHeader>
+                            <file>${maven.multiModuleProjectDirectory}/license/LICENSE-HEADER-JAVA</file>
+                        </licenseHeader>
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>apply</goal>
+                        </goals>
+                        <phase>compile</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-core</artifactId>
+                <version>${org.openjdk.jmh}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-generator-annprocess</artifactId>
+                <version>${org.openjdk.jmh}</version>
+                <scope>provided</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+</project>
