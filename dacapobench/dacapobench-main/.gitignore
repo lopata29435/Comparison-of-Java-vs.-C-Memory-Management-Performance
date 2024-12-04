@@ -7,7 +7,7 @@ local.properties
 
 benchmarks/dacapo-evaluation-git-*
 
-# Оставлены только важные файлы и папки для бенчмарков
+# Игнорирование скачанных файлов и временных данных
 benchmarks/harness/downloads/*
 !benchmarks/harness/downloads/*.MD5
 
@@ -51,6 +51,9 @@ benchmarks/harness/src/org/dacapo/parser/ParseException.java
 benchmarks/harness/src/org/dacapo/parser/SimpleCharStream.java
 benchmarks/harness/src/org/dacapo/parser/Token.java
 benchmarks/harness/src/org/dacapo/parser/TokenMgrError.java
+
+# Убедитесь, что папка с кодом не исключена
+!benchmarks/bms/avrora/harness/src/org/dacapo/harness/
 
 benchmarks/harness/build/
 benchmarks/harness/dist/
