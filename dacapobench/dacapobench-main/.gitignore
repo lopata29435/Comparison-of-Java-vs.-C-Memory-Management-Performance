@@ -1,6 +1,5 @@
 **/.DS_Store
 nohup.out
-benchmarks/.idea/
 .idea/
 .vscode/
 local.properties
@@ -8,6 +7,7 @@ local.properties
 
 benchmarks/dacapo-evaluation-git-*
 
+# Оставлены только важные файлы и папки для бенчмарков
 benchmarks/harness/downloads/*
 !benchmarks/harness/downloads/*.MD5
 
@@ -19,9 +19,6 @@ benchmarks/bms/**/downloads/*
 
 benchmarks/bms/**/data/*
 
-benchmarks/bms/**/outjar/*
-benchmarks/bms/**/outdat/*
-benchmarks/bms/**/tmp/*
 benchmarks/libs/**/tmp/*
 dacapo/
 benchmarks/outjarzip/*
@@ -46,6 +43,7 @@ benchmarks/libs/**/dist/
 benchmarks/bms/**/build/
 benchmarks/bms/**/dist/
 
+# Остались только важные файлы для бенчмарков
 benchmarks/harness/src/org/dacapo/parser/ConfigFile.java
 benchmarks/harness/src/org/dacapo/parser/ConfigFileConstants.java
 benchmarks/harness/src/org/dacapo/parser/ConfigFileTokenManager.java
